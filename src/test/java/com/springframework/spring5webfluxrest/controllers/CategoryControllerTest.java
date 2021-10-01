@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.reactivestreams.Publisher;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -53,5 +54,20 @@ class CategoryControllerTest {
                 .expectBody(Category.class);
 
         verify(categoryRepository, times(1)).findById(anyString());
+    }
+
+    @Test
+    void createCategoryTest() {
+        BDDMockito.given(categoryRepository.saveAll(any(Publisher.class)))
+                .willReturn(Flux.just(Category.builder().description("Meat").build()));
+
+        Mono<Category> categoryToSave = Mono.just(Category.builder().description("build category").build());
+
+        webTestClient.post()
+                .uri("/api/v1/categories/")
+                .body(categoryToSave, Category.class)
+                .exchange()
+                .expectStatus()
+                .isCreated();
     }
 }
