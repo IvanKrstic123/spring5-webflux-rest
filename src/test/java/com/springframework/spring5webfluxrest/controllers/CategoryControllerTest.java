@@ -11,6 +11,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Locale;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -69,5 +71,19 @@ class CategoryControllerTest {
                 .exchange()
                 .expectStatus()
                 .isCreated();
+    }
+
+    @Test
+    void testUpdateCategory () {
+        BDDMockito.given(categoryRepository.save(any(Category.class)))
+                .willReturn(Mono.just(Category.builder().build()));
+
+        Mono<Category> catToSaveMono = Mono.just(Category.builder().description("Juices").build());
+
+        webTestClient.put()
+                .uri("/api/v1/categories/asdasdsad")
+                .body(catToSaveMono, Category.class)
+                .exchange()
+                .expectStatus().isOk();
     }
 }
