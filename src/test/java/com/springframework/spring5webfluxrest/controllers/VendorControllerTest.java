@@ -1,15 +1,18 @@
 package com.springframework.spring5webfluxrest.controllers;
 
+import com.springframework.spring5webfluxrest.domain.Category;
 import com.springframework.spring5webfluxrest.domain.Vendor;
 import com.springframework.spring5webfluxrest.repositories.VendorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.reactivestreams.Publisher;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -55,5 +58,20 @@ class VendorControllerTest {
                 .expectBody(Vendor.class);
 
         verify(vendorRepository, times(1)).findById(anyString());
+    }
+
+    @Test
+    void createVendorTest() {
+        BDDMockito.given(vendorRepository.saveAll(any(Publisher.class)))
+                .willReturn(Flux.just(Category.builder().description("Meat").build()));
+
+        Mono<Category> vendorToSaveMono = Mono.just(Category.builder().description("build category").build());
+
+        webTestClient.post()
+                .uri("/api/v1/vendors/")
+                .body(vendorToSaveMono, Vendor.class)
+                .exchange()
+                .expectStatus()
+                .isCreated();
     }
 }
