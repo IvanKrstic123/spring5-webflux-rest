@@ -90,7 +90,7 @@ class CategoryControllerTest {
     @Test
     void testPatchWithChanges () {
         BDDMockito.given(categoryRepository.findById(anyString()))
-                .willReturn(Mono.just(Category.builder().build()));
+                .willReturn(Mono.just(Category.builder().description("Some Cat").build()));
 
         BDDMockito.given(categoryRepository.save(any(Category.class)))
                 .willReturn(Mono.just(Category.builder().build()));
@@ -109,12 +109,12 @@ class CategoryControllerTest {
     @Test
     void testPatchNoChanges () {
         BDDMockito.given(categoryRepository.findById(anyString()))
-                .willReturn(Mono.just(Category.builder().build()));
+                .willReturn(Mono.just(Category.builder().description("Some Cat").build()));
 
         BDDMockito.given(categoryRepository.save(any(Category.class)))
                 .willReturn(Mono.just(Category.builder().build()));
 
-        Mono<Category> catToSaveMono = Mono.just(Category.builder().build());
+        Mono<Category> catToSaveMono = Mono.just(Category.builder().description("Some Cat").build());
 
         webTestClient.patch()
                 .uri("/api/v1/categories/asdasdsad")

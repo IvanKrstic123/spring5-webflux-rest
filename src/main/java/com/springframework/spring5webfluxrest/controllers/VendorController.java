@@ -1,5 +1,6 @@
 package com.springframework.spring5webfluxrest.controllers;
 
+import com.springframework.spring5webfluxrest.domain.Category;
 import com.springframework.spring5webfluxrest.domain.Vendor;
 import com.springframework.spring5webfluxrest.repositories.VendorRepository;
 import org.reactivestreams.Publisher;
@@ -38,6 +39,24 @@ public class VendorController {
                               @RequestBody Vendor vendor) {
         vendor.setId(id);
         return vendorRepository.save(vendor);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/api/v1/vendors/{id}")
+    Mono<Vendor> updateCategoryPatch(@PathVariable String id,
+                                       @RequestBody Vendor vendor) {
+
+        return vendorRepository.findById(id)
+                .flatMap(vendor1 -> {
+                    // implement logic for all props
+                    if (!vendor1.getFirstname().equals(vendor.getFirstname())) {
+                        vendor1.setFirstname(vendor.getFirstname());
+                        vendor1.setLastname(vendor.getLastname());
+
+                        return vendorRepository.save(vendor1);
+                    }
+                    return Mono.just(vendor);
+                });
     }
 
 }

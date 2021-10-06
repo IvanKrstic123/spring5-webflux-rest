@@ -47,8 +47,9 @@ public class CategoryController {
 
         return categoryRepository.findById(id).
                 flatMap(category1 -> {
-                    if (category1.getDescription() != category.getDescription()){
+                    if (!category1.getDescription().equals(category.getDescription())){
                         category1.setDescription(category.getDescription());
+
                         return categoryRepository.save(category1);
                     }
                     return Mono.just(category1);
